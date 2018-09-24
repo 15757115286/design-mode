@@ -40,9 +40,15 @@
         function a2(a){
             console.log('a2' + a);
         }
-        var aop1 = utils.createAop(f,b1,a1);
-        var aop2 = utils.createAop(aop1,b2,a2);
+        var aop1 = utils.createAopFn(f,b1,a1);
+        var aop2 = utils.createAopFn(aop1,b2,a2);
         console.log(aop2('xwt3zz')) 
+
+        function add(){
+            console.log(arguments);
+        }
+        var curryAdd = utils.createCurryFn(add);
+        curryAdd(1)(2)(3)(4)(5)();
     </script>
 </body>
 </html>

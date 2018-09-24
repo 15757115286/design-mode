@@ -7,6 +7,8 @@ var utils = null;
     // 源生函数别名
     var toString = Object.prototype.toString;
     var fnProto = Function.prototype;
+    var arrayProto = Array.prototype;
+    var slice = arrayProto.slice;
 
     // 需要定义的类型数组，ES6可以用Symbol.toStringTag来定义自己的类型
     const types = ['Number','String','Boolean','Ojbect','RegExp','Undefined','Null','Array','Symbol','Function'];
@@ -65,7 +67,7 @@ var utils = null;
     // 由于上面的写法对函数原型链有入侵行为，并且在函数原型本身有after或者before的时候是无法注入after和before
     // 故在这里提供库中自己的aop写法
 
-    function createAop(fn,beforeFn,afterFn){
+    function createAopFn(fn,beforeFn,afterFn){
         return function(){
             var result;
             if(Type.isFunction(beforeFn)){
@@ -81,7 +83,25 @@ var utils = null;
         }
     }
 
-    utils.createAop = createAop;
+    utils.createAopFn = createAopFn;
+
+    // 创建curry函数
+    function createCurryFn(fn){
+        var args = [];
+        return function curry(){
+            if(arguments.length === 0){
+                if(Type.isFunction(fn)){
+                    return fn.apply(this,args);
+                }
+            }else{
+                // 把传进来的每一个参数存入args中，相同于es6中的args.push(...arguments)
+                args.push.apply(args,arguments);
+                return curry;
+            }
+        }
+    }
+
+    utils.createCurryFn = createCurryFn;
 
     return utils;
 })
