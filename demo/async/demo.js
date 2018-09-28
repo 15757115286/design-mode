@@ -93,7 +93,7 @@ async function demo(){
 }
 demo(); */
 // 不同的async函数之间是异步执行的
-function loadUrl(url){
+/* function loadUrl(url){
     let delay = 1000 * Math.random();
     console.log(`并发请求：正在请求的url:${url}，加载时间${delay}`);
     return new Promise(res=>{
@@ -116,4 +116,35 @@ async function demo(){
 }
 demo().then(res=>{
     console.log(res);
-})
+}) */
+// await不能对应于外层作用域中的async
+function asyncFn(index, value) {
+  return new Promise(res => {
+    console.log(`正在执行第${index}个异步函数，值为${value}`);
+    setTimeout(() => {
+      res(`异步函数执行完毕，值为${value}`);
+    }, 500);
+  });
+}
+
+// 往forEach中传入异步async函数回调
+async function demo() {
+  let array = ["xwt", "cm", "ygc"];
+  array.forEach(async (value, index) => {
+    let result = await asyncFn(index, value);
+    console.log(result);
+  });
+}
+// 语法错误的await使用
+/* async function demo(){
+    let array = ['xwt','cm','ygc'];
+    try{
+        array.forEach((value,index)=>{
+            let v = await asyncFn(index,value);
+            console.log(v);
+        })
+    }catch(e){
+        console.error(e);
+    }
+} */
+demo();
