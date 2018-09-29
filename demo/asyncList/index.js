@@ -39,7 +39,7 @@
         if (typeof task === "function") {
           task = new Promise((resolve, reject) => {
             try {
-              task(resolve, reject);
+              task(resolve, reject, result);
             } catch (e) {
               reject(e);
             }
@@ -63,37 +63,17 @@
     }
 
     start(callback) {
+      let isFunction = typeof callback === "function";
       let promise = this[doTasks]();
-      if (typeof callback !== "function") return;
       promise.then(
         data => {
-          callback({ data });
+          isFunction && callback({ data });
         },
         error => {
-          callback({ error });
+          isFunction && callback({ error });
         }
       );
     }
   }
   return AsyncList;
 });
-
-/* function asyncFunction(name) {
-  return (resolve, reject) => {
-    setTimeout(() => {
-      reject("hello" + name);
-    }, 1000);
-  };
-}
-let todoList = new AsyncList({ complete: false });
-console.log(todoList);
-console.time("start");
-todoList
-  .add(asyncFunction("xwt"))
-  .add(asyncFunction("cm"))
-  .add(asyncFunction("ygc"))
-  .start(({ data, error }) => {
-    console.log(data, error);
-    console.timeEnd("start");
-  });
- */
