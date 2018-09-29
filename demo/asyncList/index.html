@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>async task test</title>
+    <script src="./index.js"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <script>
+        let container = document.querySelector('#container');
+        let todoList = new AsyncList({ complete: true })
+        function createAsyncFn(fn, interval = 1000) {
+            let self = this;
+            return function asyncFn(...args) {
+                return function lastFn(resolve, reject) {
+                    setTimeout(() => {
+                        try {
+                            let result = fn.apply(self, args);
+                            resolve(result);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    }, interval);
+                }
+            }
+        }
+        function appendName(name) {
+            let div = document.createElement('div');
+            div.id = 'name';
+            div.innerHTML = name;
+            container.appendChild(div);
+            return div;
+        }
+        function appendComment(){
+            let info = document.createElement('p');
+            info.innerHTML = '名字颜色太单调，没事，现在上色，黄色如何(#^.^#)';
+            container.appendChild(info);
+            return info;
+        }
+        function changeColor(color){
+            let div = document.querySelector('#name');
+            div.style.color = color;
+            return color;
+        }
+
+        function createBoard(id){
+            if(!id) return;
+            let p = document.querySelector(id);
+            if(!p){
+                p = document.createElement('p');
+                p.id = id;
+            }
+            container.appendChild(p);
+        }
+
+        function createGradualWrite(id,info,todoList,letterInterval = 200){
+            if(!id || typeof info != 'string') return;
+            let cacheboard = document.querySelector('#' + id);
+            if(!cacheboard){
+                let pBoard = createAsyncFn(createBoard,200)(id);
+                todoList.add(pBoard);
+            }
+            let letters = info.split('');
+            letters.forEach(letter=>{
+                todoList.add(createAsyncFn((letter)=>{
+                    let board = cacheboard ||(cacheboard = document.querySelector('#' + id));
+                    if(!board) return;
+                    let innerHTML = board.innerHTML;
+                    board.innerHTML = innerHTML + letter;
+                    return board.innerHTML;
+                },letterInterval)(letter))
+            })
+        }
+        let pFn = createAsyncFn(appendName,0)('xwt');
+        let pColor = createAsyncFn(changeColor)('yellow');
+        let pComment = createAsyncFn(appendComment)();
+        todoList.add(pFn).add(pComment).add(pColor);
+        createGradualWrite('board1','你好啊，啊头，你今天怎么这么可爱？',todoList);
+        createGradualWrite('board2','今天真的是有那么一点点的累，怎么办呢？',todoList);
+        createGradualWrite('board1','上面的话还没有写完呢，你真的是真的真的可爱',todoList,50);
+        todoList.start();
+    </script>
+</body>
+
+</html>
