@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./utils.js"></script>
+</head>
+<body>
+    <script>
+        var toString = utils.createUncurryFn(Object.prototype.toString);
+        var push = utils.createUncurryFn([].push);
+        var splice = utils.createUncurryFn([].splice);
+        var x = {};
+        push(x,1,2,3,4)
+        splice(x,0,2,'x')
+
+        var num = 0,timer = null;;
+        function log(name,age){
+            console.log(num++,name + age);
+            if(num == 4) timer()
+        }
+        var logThrottle = utils.throttle(log,1000,true);
+        //timer = utils.setInterval(log,500,'xwt',18)
+        utils.timeChunk([1,2,3,4,5,6,7,8,9],function(num){
+            var div = document.createElement('div');
+            div.innerHTML = '这个第' + num +'个创建的对象';
+            document.body.appendChild(div)
+        })
+        console.log('sync function code')
+    </script>
+</body>
+</html>
