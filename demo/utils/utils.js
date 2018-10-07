@@ -66,6 +66,7 @@
                 if (Type.isFunction(afterFn)) {
                     afterFn.apply(this, arguments);
                 }
+                return result;
             }
         }
     }
@@ -142,6 +143,29 @@
     }
 
     utils.throttle = throttle;
+
+    // 创建防抖函数，只有在停止调用函数一定时间之后才会真正的执行该函数
+    function preventShake(fn, interval, immediate){
+        if (!Type.isFunction(fn)) return;
+        interval = interval || 1000;
+        var timer = null;
+        return function (){
+            var args = slice(arguments),
+                self = this;
+            // 执行完以后没必要在设置定时器，否则会执行2遍函数
+            if(immediate === true) {
+                fn.apply(self,args);
+                return immediate = false;
+            }
+            if(timer) clearTimeout(timer);
+            timer = setTimeout(function(){
+                fn.apply(self,args);
+            },interval);
+            return timer;
+        }
+    }
+
+    utils.preventShake = preventShake;
 
     // 因为系统的setInterval会在规定的时间内把任务推入任务队列，所以当执行的任务较长的时候
     // 两个任务之间的间隔会小于规定的时间。如果在任务队列中还有对应的任务，则会跳过这一次的任务推入

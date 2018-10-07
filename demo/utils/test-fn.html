@@ -29,6 +29,11 @@
             document.body.appendChild(div)
         })
         console.log('sync function code')
+        function log(){
+            console.log(document.documentElement.clientWidth);
+        }
+        var mylog = utils.preventShake(log);
+        window.onresize = mylog;
     </script>
 </body>
 </html>
